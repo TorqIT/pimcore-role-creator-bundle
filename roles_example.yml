@@ -1,0 +1,11 @@
+system_roles:
+    My_Role:
+        - Permissions:
+              - NOT_IMPLEMENTED
+        - Workspaces:
+              - NOT_IMPLEMENTED
+    Another_Role:
+        - Permissions:
+              - NOT_IMPLEMENTED
+        - Workspaces:
+              - NOT_IMPLEMENTED

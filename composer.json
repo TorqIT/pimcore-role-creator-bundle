@@ -1,0 +1,17 @@
+{
+    "name": "torqit/pimcore-role-creator-bundle",
+    "type": "pimcore-bundle",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "TorqIT\\PimcoreRoleCreatorBundle\\": "bundles"
+        }
+    },
+    "extra": {
+        "pimcore": {
+            "bundles": [
+                "TorqIT\\PimcoreRoleCreatorBundle\\PimcoreRoleCreatorBundle"
+            ]
+        }
+    }
+}
