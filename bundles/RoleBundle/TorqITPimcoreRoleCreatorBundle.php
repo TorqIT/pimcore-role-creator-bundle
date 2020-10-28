@@ -1,6 +1,6 @@
 <?php
 
-namespace TorqIT\PimcoreRoleCreatorBundle;
+namespace TorqIT\PimcoreRoleCreatorBundle\RoleBundle;
 
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
 

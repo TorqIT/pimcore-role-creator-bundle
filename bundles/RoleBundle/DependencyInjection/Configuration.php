@@ -1,6 +1,6 @@
 <?php
 
-namespace TorqIT\PimcoreRoleCreatorBundle\DependencyInjection;
+namespace TorqIT\PimcoreRoleCreatorBundle\RoleBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
