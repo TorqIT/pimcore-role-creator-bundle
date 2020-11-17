@@ -9,7 +9,7 @@ class PimcoreRoleCreatorBundle extends AbstractPimcoreBundle
     public function getJsPaths()
     {
         return [
-            '/bundles/torqitpimcorerolecreator/js/pimcore/startup.js'
+            '/pimcorerolecreator/js/pimcore/startup.js'
         ];
     }
 }
