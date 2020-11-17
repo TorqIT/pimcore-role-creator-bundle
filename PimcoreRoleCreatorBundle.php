@@ -1,10 +1,10 @@
 <?php
 
-namespace TorqIT\PimcoreRoleCreatorBundle\RoleBundle;
+namespace TorqIT\PimcoreRoleCreatorBundle;
 
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
 
-class TorqITPimcoreRoleCreatorBundle extends AbstractPimcoreBundle
+class PimcoreRoleCreatorBundle extends AbstractPimcoreBundle
 {
     public function getJsPaths()
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace TorqIT\PimcoreRoleCreatorBundle\RoleBundle\Command;
+namespace TorqIT\PimcoreRoleCreatorBundle\Command;
 
 use Pimcore\Config;
 use Pimcore\Console\AbstractCommand;
@@ -13,7 +13,7 @@ class RoleCreatorCommand extends AbstractCommand
     protected function configure()
     {
         $this
-            ->setName('torq-it-role-creator:generate-roles')
+            ->setName('torq:generate-roles')
             ->setDescription('Command for creating user roles in the pimcore admin interface.');
     }
 

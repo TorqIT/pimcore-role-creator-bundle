@@ -1,6 +1,6 @@
 <?php
 
-namespace TorqIT\PimcoreRoleCreatorBundle\RoleBundle\DependencyInjection;
+namespace TorqIT\PimcoreRoleCreatorBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;

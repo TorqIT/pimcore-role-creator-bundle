@@ -9,6 +9,6 @@ services:
         # if you need to do this, you can override this setting on individual services
         public: false
 
-    TorqIT\PimcoreRoleCreatorBundle\RoleBundle\Command\:
+    TorqIT\PimcoreRoleCreatorBundle\Command\:
         resource: '../../Command/*'
         tags: ['console.command']
