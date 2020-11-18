@@ -4,13 +4,13 @@
     "require": {},
     "autoload": {
         "psr-4": {
-            "TorqIT\\PimcoreRoleCreatorBundle\\": "src"
+            "TorqIT\\RoleCreatorBundle\\": "src"
         }
     },
     "extra": {
         "pimcore": {
             "bundles": [
-                "TorqIT\\PimcoreRoleCreatorBundle\\PimcoreRoleCreatorBundle"
+                "TorqIT\\RoleCreatorBundle\\RoleCreatorBundle"
             ]
         }
     }
