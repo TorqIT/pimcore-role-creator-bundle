@@ -19,22 +19,24 @@ class RoleCreatorCommand extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $roleFileLocation = PIMCORE_APP_ROOT . '/config/roles.yml';
+        $roleFileLocation = PIMCORE_PROJECT_ROOT . '/config/roles.yml';
         $myConfig = new Config();
         $roleStructureArray = $myConfig->getConfigInstance($roleFileLocation, true);
 
-        if($roleStructureArray["system_roles"]){
+        if ($roleStructureArray["system_roles"]) {
             $systemRoles = $roleStructureArray["system_roles"];
-            foreach($systemRoles as $roleName => $roleProperties){
+            foreach ($systemRoles as $roleName => $roleProperties) {
                 $this->createRole($roleName, $roleProperties);
             }
         }
+
+        return 0;
     }
 
-    function createRole($roleName, $roleProperties)
+    private function createRole($roleName, $roleProperties)
     {
         $roleExists = Role::getByName($roleName);
-        if($roleExists){
+        if ($roleExists) {
             return;
         }
 
