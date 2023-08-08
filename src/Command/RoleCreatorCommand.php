@@ -63,14 +63,11 @@ class RoleCreatorCommand extends AbstractCommand
         }
 
         $this->applyPermissions($role, $roleProperties);
+        $this->applyWorkspaces($role, $roleProperties);
 
         $role->setParentId(0);
         $role->setName($roleName);
         $role->save();
-
-        //Workspaces are their own entity that relies on the role existing, so
-        // we do this step after we save our role
-        $this->applyWorkspaces($role, $roleProperties);
     }
 
     private function applyPermissions(Role $role, array $roleProperties)
@@ -111,8 +108,8 @@ class RoleCreatorCommand extends AbstractCommand
         {
             foreach($workspaces["data_objects"] as $folder => $permissions)
             {
-                $this->output->writeln("Building new data object workspace for '$folder'", OutputInterface::VERBOSITY_VERBOSE);
-                $this->workspaceBuilder->buildObjectWorkspace($role, $folder, $permissions);
+                $this->output->writeln("Configuring data object workspace for '$folder'", OutputInterface::VERBOSITY_VERBOSE);
+                $this->workspaceBuilder->buildObjectWorkspaceIntoRole($role, $folder, $permissions);
             }
         }
     }

@@ -24,7 +24,7 @@ class WorkspaceBuilder
     private const PROPERTIES = "properties";
 
     /** @param string[] $permissions */
-    public function buildObjectWorkspace(Role $role, string $folderName, array $permissions)
+    public function buildObjectWorkspaceIntoRole(Role $role, string $folderName, array $permissions)
     {
         $folder = DataObjectFolder::getByPath($folderName);
 
@@ -33,9 +33,16 @@ class WorkspaceBuilder
             throw new NotFoundException("Could not find folder or data object with path '$folderName'");
         }
 
-        $workspace = new Workspace\DataObject();
-        $workspace->setUserId($role->getId());
-        $workspace->setCid($folder->getId());
+        /** @var Workspace\DataObject $workspace */
+        $workspace = $this->findWorkspace($folder->getId(), $role->getWorkspacesObject());
+
+        if(!$workspace)
+        {
+            $workspace = new Workspace\DataObject();
+            $workspace->setCid($folder->getId());
+
+            $role->setWorkspacesObject(array_merge($role->getWorkspacesObject(), [$workspace]));
+        }
 
         $workspace->setList(in_array(self::LIST, $permissions));
         $workspace->setView(in_array(self::VIEW, $permissions));
@@ -48,7 +55,19 @@ class WorkspaceBuilder
         $workspace->setSettings(in_array(self::SETTINGS, $permissions));
         $workspace->setVersions(in_array(self::VERSIONS, $permissions));
         $workspace->setProperties(in_array(self::PROPERTIES, $permissions));
+    }
 
-        $workspace->save();
+    /** @param Workspace\AbstractWorkspace[] $workspaces */
+    private function findWorkspace(int $folderId, array $workspaces)
+    {
+        foreach($workspaces as $workspace)
+        {
+            if($folderId == $workspace->getCid())
+            {
+                return $workspace;
+            }
+        }
+
+        return null;
     }
 }
