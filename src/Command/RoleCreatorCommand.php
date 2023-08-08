@@ -112,5 +112,23 @@ class RoleCreatorCommand extends AbstractCommand
                 $this->workspaceBuilder->buildObjectWorkspaceIntoRole($role, $folder, $permissions);
             }
         }
+
+        if(key_exists("assets", $workspaces))
+        {
+            foreach($workspaces["assets"] as $folder => $permissions)
+            {
+                $this->output->writeln("Configuring asset workspace for '$folder'", OutputInterface::VERBOSITY_VERBOSE);
+                $this->workspaceBuilder->buildAssetWorkspaceIntoRole($role, $folder, $permissions);
+            }
+        }
+
+        if(key_exists("documents", $workspaces))
+        {
+            foreach($workspaces["documents"] as $folder => $permissions)
+            {
+                $this->output->writeln("Configuring document workspace for '$folder'", OutputInterface::VERBOSITY_VERBOSE);
+                $this->workspaceBuilder->buildDocumentWorkspaceIntoRole($role, $folder, $permissions);
+            }
+        }
     }
 }

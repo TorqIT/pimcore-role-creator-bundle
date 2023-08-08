@@ -2,8 +2,8 @@
 
 namespace TorqIT\RoleCreatorBundle\Service;
 
-use Pimcore\Model\Document\Folder as AssetFolder;
-use Pimcore\Model\Asset\Folder as DocumentFolder;
+use Pimcore\Model\Document\Folder as DocumentFolder;
+use Pimcore\Model\Asset\Folder as AssetFolder;
 use Pimcore\Model\DataObject\Folder as DataObjectFolder;
 use Pimcore\Model\Exception\NotFoundException;
 use Pimcore\Model\User\Role;
@@ -27,11 +27,7 @@ class WorkspaceBuilder
     public function buildObjectWorkspaceIntoRole(Role $role, string $folderName, array $permissions)
     {
         $folder = DataObjectFolder::getByPath($folderName);
-
-        if(!$folder)
-        {
-            throw new NotFoundException("Could not find folder or data object with path '$folderName'");
-        }
+        $this->throwIfNull($folder, $folderName);
 
         /** @var Workspace\DataObject $workspace */
         $workspace = $this->findWorkspace($folder->getId(), $role->getWorkspacesObject());
@@ -44,17 +40,75 @@ class WorkspaceBuilder
             $role->setWorkspacesObject(array_merge($role->getWorkspacesObject(), [$workspace]));
         }
 
+        $workspace->setSave(in_array(self::SAVE, $permissions));
+        $workspace->setUnpublish(in_array(self::UNPUBLISH, $permissions));
+
+        $this->setCommonWorkspaceAttributes($workspace, $permissions);
+    }
+
+    /** @param string[] $permissions */
+    public function buildAssetWorkspaceIntoRole(Role $role, string $folderName, array $permissions)
+    {
+        $folder = AssetFolder::getByPath($folderName);
+        $this->throwIfNull($folder, $folderName);
+
+        /** @var Workspace\Asset $workspace */
+        $workspace = $this->findWorkspace($folder->getId(), $role->getWorkspacesAsset());
+
+        if(!$workspace)
+        {
+            $workspace = new Workspace\Asset();
+            $workspace->setCid($folder->getId());
+
+            $role->setWorkspacesAsset(array_merge($role->getWorkspacesAsset(), [$workspace]));
+        }
+
+        $this->setCommonWorkspaceAttributes($workspace, $permissions);
+    }
+
+    /** @param string[] $permissions */
+    public function buildDocumentWorkspaceIntoRole(Role $role, string $folderName, array $permissions)
+    {
+        $folder = DocumentFolder::getByPath($folderName);
+        $this->throwIfNull($folder, $folderName);
+
+        /** @var Workspace\Document $workspace */
+        $workspace = $this->findWorkspace($folder->getId(), $role->getWorkspacesDocument());
+
+        if(!$workspace)
+        {
+            $workspace = new Workspace\Document();
+            $workspace->setCid($folder->getId());
+
+            $role->setWorkspacesDocument(array_merge($role->getWorkspacesDocument(), [$workspace]));
+        }
+
+        $workspace->setSave(in_array(self::SAVE, $permissions));
+        $workspace->setUnpublish(in_array(self::UNPUBLISH, $permissions));
+
+        $this->setCommonWorkspaceAttributes($workspace, $permissions);
+    }
+
+    /** @param string[] $permissions */
+    public function setCommonWorkspaceAttributes(Workspace\AbstractWorkspace $workspace, array $permissions)
+    {
         $workspace->setList(in_array(self::LIST, $permissions));
         $workspace->setView(in_array(self::VIEW, $permissions));
-        $workspace->setSave(in_array(self::SAVE, $permissions));
         $workspace->setPublish(in_array(self::PUBLISH, $permissions));
-        $workspace->setUnpublish(in_array(self::UNPUBLISH, $permissions));
         $workspace->setDelete(in_array(self::DELETE, $permissions));
         $workspace->setRename(in_array(self::RENAME, $permissions));
         $workspace->setCreate(in_array(self::CREATE, $permissions));
         $workspace->setSettings(in_array(self::SETTINGS, $permissions));
         $workspace->setVersions(in_array(self::VERSIONS, $permissions));
         $workspace->setProperties(in_array(self::PROPERTIES, $permissions));
+    }
+
+    private function throwIfNull($folder, $path)
+    {
+        if(!$folder)
+        {
+            throw new NotFoundException("Could not find folder with path '$path'");
+        }
     }
 
     /** @param Workspace\AbstractWorkspace[] $workspaces */
