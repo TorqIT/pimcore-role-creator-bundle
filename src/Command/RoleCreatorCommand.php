@@ -77,5 +77,9 @@ class RoleCreatorCommand extends AbstractCommand
             $targetPermissions = array_diff($this->permissionKeys, $roleProperties["excluded_permissions"]);
             $role->setPermissions($targetPermissions);
         }
+        else if(key_exists("all_permissions", $roleProperties))
+        {
+            $role->setPermissions($this->permissionKeys);
+        }
     }
 }
