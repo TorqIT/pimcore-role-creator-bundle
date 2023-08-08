@@ -12,3 +12,7 @@ services:
     TorqIT\RoleCreatorBundle\Command\:
         resource: '../../Command/*'
         tags: ['console.command']
+
+    TorqIT\RoleCreatorBundle\Service\:
+        resource: "../../Service/*"
+        public: true

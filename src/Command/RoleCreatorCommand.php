@@ -8,10 +8,17 @@ use Pimcore\Model\User\Permission\Definition;
 use Pimcore\Model\User\Role;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use TorqIT\RoleCreatorBundle\Service\WorkspaceBuilder;
 
 class RoleCreatorCommand extends AbstractCommand
 {
     private array $permissionKeys;
+
+    public function __construct(
+      private WorkspaceBuilder $workspaceBuilder
+    ) {
+        parent::__construct();
+    }
 
     protected function configure()
     {
@@ -36,19 +43,23 @@ class RoleCreatorCommand extends AbstractCommand
         if ($roleStructureArray["system_roles"]) {
             $systemRoles = $roleStructureArray["system_roles"];
             foreach ($systemRoles as $roleName => $roleProperties) {
-                $this->createRole($roleName, $roleProperties);
+                $this->createOrUpdateRole($roleName, $roleProperties);
             }
         }
 
         return 0;
     }
 
-    private function createRole($roleName, $roleProperties)
+    private function createOrUpdateRole($roleName, $roleProperties)
     {
         $role = Role::getByName($roleName);
 
         if (!$role) {
+            $this->output->writeln("Creating new role: $roleName");
             $role = new Role();
+        }
+        else {
+            $this->output->writeln("Updating role: $roleName");
         }
 
         $this->applyPermissions($role, $roleProperties);
@@ -56,6 +67,10 @@ class RoleCreatorCommand extends AbstractCommand
         $role->setParentId(0);
         $role->setName($roleName);
         $role->save();
+
+        //Workspaces are their own entity that relies on the role existing, so
+        // we do this step after we save our role
+        $this->applyWorkspaces($role, $roleProperties);
     }
 
     private function applyPermissions(Role $role, array $roleProperties)
@@ -80,6 +95,25 @@ class RoleCreatorCommand extends AbstractCommand
         else if(key_exists("all_permissions", $roleProperties))
         {
             $role->setPermissions($this->permissionKeys);
+        }
+    }
+
+    private function applyWorkspaces(Role $role, array $roleProperties)
+    {
+        if(!key_exists("workspaces", $roleProperties))
+        {
+            return;
+        }
+
+        $workspaces = $roleProperties["workspaces"];
+
+        if(key_exists("data_objects", $workspaces))
+        {
+            foreach($workspaces["data_objects"] as $folder => $permissions)
+            {
+                $this->output->writeln("Building new data object workspace for '$folder'", OutputInterface::VERBOSITY_VERBOSE);
+                $this->workspaceBuilder->buildObjectWorkspace($role, $folder, $permissions);
+            }
         }
     }
 }
