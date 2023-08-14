@@ -24,69 +24,51 @@ class WorkspaceBuilder
     private const PROPERTIES = "properties";
 
     /** @param string[] $permissions */
-    public function buildObjectWorkspaceIntoRole(Role $role, string $folderName, array $permissions)
+    public function buildObjectWorkspace(string $folderName, array $permissions)
     {
         $folder = DataObjectFolder::getByPath($folderName);
         $this->throwIfNull($folder, $folderName);
 
-        /** @var Workspace\DataObject $workspace */
-        $workspace = $this->findWorkspace($folder->getId(), $role->getWorkspacesObject());
-
-        if(!$workspace)
-        {
-            $workspace = new Workspace\DataObject();
-            $workspace->setCid($folder->getId());
-
-            $role->setWorkspacesObject(array_merge($role->getWorkspacesObject(), [$workspace]));
-        }
+        $workspace = new Workspace\DataObject();
+        $workspace->setCid($folder->getId());
 
         $workspace->setSave(in_array(self::SAVE, $permissions));
         $workspace->setUnpublish(in_array(self::UNPUBLISH, $permissions));
 
         $this->setCommonWorkspaceAttributes($workspace, $permissions);
+
+        return $workspace;
     }
 
     /** @param string[] $permissions */
-    public function buildAssetWorkspaceIntoRole(Role $role, string $folderName, array $permissions)
+    public function buildAssetWorkspace(string $folderName, array $permissions)
     {
         $folder = AssetFolder::getByPath($folderName);
         $this->throwIfNull($folder, $folderName);
 
-        /** @var Workspace\Asset $workspace */
-        $workspace = $this->findWorkspace($folder->getId(), $role->getWorkspacesAsset());
-
-        if(!$workspace)
-        {
-            $workspace = new Workspace\Asset();
-            $workspace->setCid($folder->getId());
-
-            $role->setWorkspacesAsset(array_merge($role->getWorkspacesAsset(), [$workspace]));
-        }
+        $workspace = new Workspace\Asset();
+        $workspace->setCid($folder->getId());
 
         $this->setCommonWorkspaceAttributes($workspace, $permissions);
+
+        return $workspace;
     }
 
     /** @param string[] $permissions */
-    public function buildDocumentWorkspaceIntoRole(Role $role, string $folderName, array $permissions)
+    public function buildDocumentWorkspace(string $folderName, array $permissions)
     {
         $folder = DocumentFolder::getByPath($folderName);
         $this->throwIfNull($folder, $folderName);
 
-        /** @var Workspace\Document $workspace */
-        $workspace = $this->findWorkspace($folder->getId(), $role->getWorkspacesDocument());
-
-        if(!$workspace)
-        {
-            $workspace = new Workspace\Document();
-            $workspace->setCid($folder->getId());
-
-            $role->setWorkspacesDocument(array_merge($role->getWorkspacesDocument(), [$workspace]));
-        }
+        $workspace = new Workspace\Document();
+        $workspace->setCid($folder->getId());
 
         $workspace->setSave(in_array(self::SAVE, $permissions));
         $workspace->setUnpublish(in_array(self::UNPUBLISH, $permissions));
 
         $this->setCommonWorkspaceAttributes($workspace, $permissions);
+
+        return $workspace;
     }
 
     /** @param string[] $permissions */
@@ -109,19 +91,5 @@ class WorkspaceBuilder
         {
             throw new NotFoundException("Could not find folder with path '$path'");
         }
-    }
-
-    /** @param Workspace\AbstractWorkspace[] $workspaces */
-    private function findWorkspace(int $folderId, array $workspaces)
-    {
-        foreach($workspaces as $workspace)
-        {
-            if($folderId == $workspace->getCid())
-            {
-                return $workspace;
-            }
-        }
-
-        return null;
     }
 }
