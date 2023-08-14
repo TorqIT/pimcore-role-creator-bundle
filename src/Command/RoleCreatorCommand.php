@@ -99,6 +99,9 @@ class RoleCreatorCommand extends AbstractCommand
     {
         if(!key_exists("workspaces", $roleProperties))
         {
+            $role->setWorkspacesObject([]);
+            $role->setWorkspacesAsset([]);
+            $role->setWorkspacesDocument([]);
             return;
         }
 
@@ -116,6 +119,9 @@ class RoleCreatorCommand extends AbstractCommand
 
             $role->setWorkspacesObject($objectWorkspaces);
         }
+        else {
+            $role->setWorkspacesObject([]);
+        }
 
         if(key_exists("assets", $workspaces))
         {
@@ -129,6 +135,9 @@ class RoleCreatorCommand extends AbstractCommand
 
             $role->setWorkspacesAsset($assetWorkspaces);
         }
+        else {
+            $role->setWorkspacesAsset([]);
+        }
 
         if(key_exists("documents", $workspaces))
         {
@@ -141,6 +150,9 @@ class RoleCreatorCommand extends AbstractCommand
             }
 
             $role->setWorkspacesDocument($documentWorkspaces);
+        }
+        else {
+            $role->setWorkspacesDocument([]);
         }
     }
 }
