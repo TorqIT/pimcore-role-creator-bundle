@@ -4,10 +4,13 @@ namespace TorqIT\RoleCreatorBundle\Command;
 
 use Pimcore\Config;
 use Pimcore\Console\AbstractCommand;
+use Pimcore\Model\DataObject\ClassDefinition;
+use Pimcore\Model\Document\DocType;
 use Pimcore\Model\User\Permission\Definition;
 use Pimcore\Model\User\Role;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Config\Pimcore\ConfigLocation\DocumentTypesConfig;
 use TorqIT\RoleCreatorBundle\Service\WorkspaceBuilder;
 
 class RoleCreatorCommand extends AbstractCommand
@@ -64,6 +67,8 @@ class RoleCreatorCommand extends AbstractCommand
 
         $this->applyPermissions($role, $roleProperties);
         $this->applyWorkspaces($role, $roleProperties);
+
+
 
         $role->setParentId(0);
         $role->setName($roleName);
@@ -142,5 +147,64 @@ class RoleCreatorCommand extends AbstractCommand
 
             $role->setWorkspacesDocument($documentWorkspaces);
         }
+    }
+
+    private function applyAllowedTypes(Role $role, array $roleProperties)
+    {
+        if(!key_exists("allowedTypes", $roleProperties))
+        {
+            return;
+        }
+
+        $allowedTypes = $roleProperties["allowedTypes"];
+
+        if(key_exists("classes", $allowedTypes) && is_array($allowedTypes["classes"]))
+        {
+            $allowedClasses = [];
+
+            foreach($allowedTypes["classes"] as $className)
+            {
+                $classDef = ClassDefinition::getByName($className);
+
+                if($classDef)
+                {
+                    $allowedClasses[] = $classDef->getId();
+                }
+            }
+
+            $role->setClasses($allowedClasses);
+        }
+
+        if(key_exists("document_types", $allowedTypes) && is_array($allowedTypes["document_types"]))
+        {
+            $allowedDocs = [];
+            $docTypes = (new DocType\Listing())->load();
+
+            foreach($allowedTypes["document_types"] as $docName)
+            {
+                $docType = $this->findDocWithName($docName, $docTypes);
+
+                if($docType)
+                {
+                    $allowedDocs[] = $docType->getId();
+                }
+            }
+
+            $role->setDocTypes($allowedDocs);
+        }
+    }
+
+    /** @param DocType[] $docTypes */
+    private function findDocWithName(string $name, array $docTypes)
+    {
+        foreach($docTypes as $docType)
+        {
+            if($docType->getName() == $name)
+            {
+                return $docType;
+            }
+        }
+
+        return null;
     }
 }
