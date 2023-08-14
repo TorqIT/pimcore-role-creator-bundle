@@ -153,6 +153,8 @@ class RoleCreatorCommand extends AbstractCommand
     {
         if(!key_exists("allowedTypes", $roleProperties))
         {
+            $role->setClasses([]);
+            $role->setDocTypes([]);
             return;
         }
 
@@ -174,6 +176,9 @@ class RoleCreatorCommand extends AbstractCommand
 
             $role->setClasses($allowedClasses);
         }
+        else {
+            $role->setClasses([]);
+        }
 
         if(key_exists("document_types", $allowedTypes) && is_array($allowedTypes["document_types"]))
         {
@@ -191,6 +196,9 @@ class RoleCreatorCommand extends AbstractCommand
             }
 
             $role->setDocTypes($allowedDocs);
+        }
+        else {
+            $role->setDocTypes([]);
         }
     }
 
