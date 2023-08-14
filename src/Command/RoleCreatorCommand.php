@@ -81,5 +81,9 @@ class RoleCreatorCommand extends AbstractCommand
         {
             $role->setPermissions($this->permissionKeys);
         }
+        else
+        {
+            $role->setPermissions([]);
+        }
     }
 }
