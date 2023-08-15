@@ -2,9 +2,9 @@
 
 namespace TorqIT\RoleCreatorBundle\Service;
 
-use Pimcore\Model\Document\Folder as DocumentFolder;
-use Pimcore\Model\Asset\Folder as AssetFolder;
-use Pimcore\Model\DataObject\Folder as DataObjectFolder;
+use Pimcore\Model\Asset;
+use Pimcore\Model\DataObject;
+use Pimcore\Model\Document;
 use Pimcore\Model\Exception\NotFoundException;
 use Pimcore\Model\User\Role;
 use Pimcore\Model\User\Workspace;
@@ -26,8 +26,8 @@ class WorkspaceBuilder
     /** @param string[] $permissions */
     public function buildObjectWorkspace(string $folderName, array $permissions)
     {
-        $folder = DataObjectFolder::getByPath($folderName);
-        $this->throwIfNull($folder, $folderName);
+        $folder = DataObject::getByPath($folderName);
+        $this->throwIfNull($folder, "data object", $folderName);
 
         $workspace = new Workspace\DataObject();
         $workspace->setCid($folder->getId());
@@ -43,8 +43,8 @@ class WorkspaceBuilder
     /** @param string[] $permissions */
     public function buildAssetWorkspace(string $folderName, array $permissions)
     {
-        $folder = AssetFolder::getByPath($folderName);
-        $this->throwIfNull($folder, $folderName);
+        $folder = Asset::getByPath($folderName);
+        $this->throwIfNull($folder, "asset", $folderName);
 
         $workspace = new Workspace\Asset();
         $workspace->setCid($folder->getId());
@@ -57,8 +57,8 @@ class WorkspaceBuilder
     /** @param string[] $permissions */
     public function buildDocumentWorkspace(string $folderName, array $permissions)
     {
-        $folder = DocumentFolder::getByPath($folderName);
-        $this->throwIfNull($folder, $folderName);
+        $folder = Document::getByPath($folderName);
+        $this->throwIfNull($folder, "document", $folderName);
 
         $workspace = new Workspace\Document();
         $workspace->setCid($folder->getId());
@@ -85,11 +85,11 @@ class WorkspaceBuilder
         $workspace->setProperties(in_array(self::PROPERTIES, $permissions));
     }
 
-    private function throwIfNull($folder, $path)
+    private function throwIfNull($folder, $type, $path)
     {
         if(!$folder)
         {
-            throw new NotFoundException("Could not find folder with path '$path'");
+            throw new NotFoundException("Could not find $type path '$path'");
         }
     }
 }
