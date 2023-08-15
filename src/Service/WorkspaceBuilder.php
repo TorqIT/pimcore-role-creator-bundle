@@ -89,7 +89,7 @@ class WorkspaceBuilder
     {
         if(!$folder)
         {
-            throw new NotFoundException("Could not $type path '$path'");
+            throw new NotFoundException("Could not find $type path '$path'");
         }
     }
 }
