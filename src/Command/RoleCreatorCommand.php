@@ -65,9 +65,9 @@ class RoleCreatorCommand extends AbstractCommand
             $this->output->writeln("Updating role: $roleName");
         }
 
-        $this->applyPermissions($role, $roleProperties);
-        $this->applyWorkspaces($role, $roleProperties);
-        $this->applyAllowedTypes($role, $roleProperties);
+        $this->applyPermissions($role, $roleProperties ?? []);
+        $this->applyWorkspaces($role, $roleProperties ?? []);
+        $this->applyAllowedTypes($role, $roleProperties ?? []);
 
         $role->setParentId(0);
         $role->setName($roleName);
