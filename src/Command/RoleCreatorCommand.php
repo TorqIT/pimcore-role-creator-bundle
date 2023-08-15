@@ -107,52 +107,31 @@ class RoleCreatorCommand extends AbstractCommand
 
         $workspaces = $roleProperties["workspaces"];
 
-        if(key_exists("data_objects", $workspaces))
-        {
-            $objectWorkspaces = [];
+        $this->buildAndSetWorkspaces($workspaces, $role, "data_objects", "Object", "data object");
+        $this->buildAndSetWorkspaces($workspaces, $role, "assets", "Asset", "asset");
+        $this->buildAndSetWorkspaces($workspaces, $role, "documents", "Document", "document");
+    }
 
-            foreach($workspaces["data_objects"] as $folder => $permissions)
+    //A bit ugly, but it saves SO much room
+    private function buildAndSetWorkspaces(array $workspaces, Role $role, string $propertyKey, string $workspaceType, string $workspacePrettyName)
+    {
+        $setFunc = "setWorkspaces{$workspaceType}";
+
+        if(key_exists($propertyKey, $workspaces))
+        {
+            $builtWorkspaces = [];
+            $buildFunc = "build{$workspaceType}Workspace";
+
+            foreach($workspaces[$propertyKey] as $folder => $permissions)
             {
-                $this->output->writeln("Configuring data object workspace for '$folder'", OutputInterface::VERBOSITY_VERBOSE);
-                $objectWorkspaces[] = $this->workspaceBuilder->buildObjectWorkspace($folder, $permissions);
+                $this->output->writeln("Configuring $workspacePrettyName workspace for '$folder'", OutputInterface::VERBOSITY_VERBOSE);
+                $builtWorkspaces[] = $this->workspaceBuilder->$buildFunc($folder, $permissions);
             }
 
-            $role->setWorkspacesObject($objectWorkspaces);
+            $role->$setFunc($builtWorkspaces);
         }
         else {
-            $role->setWorkspacesObject([]);
-        }
-
-        if(key_exists("assets", $workspaces))
-        {
-            $assetWorkspaces = [];
-
-            foreach($workspaces["assets"] as $folder => $permissions)
-            {
-                $this->output->writeln("Configuring asset workspace for '$folder'", OutputInterface::VERBOSITY_VERBOSE);
-                $assetWorkspaces[] = $this->workspaceBuilder->buildAssetWorkspace($folder, $permissions);
-            }
-
-            $role->setWorkspacesAsset($assetWorkspaces);
-        }
-        else {
-            $role->setWorkspacesAsset([]);
-        }
-
-        if(key_exists("documents", $workspaces))
-        {
-            $documentWorkspaces = [];
-
-            foreach($workspaces["documents"] as $folder => $permissions)
-            {
-                $this->output->writeln("Configuring document workspace for '$folder'", OutputInterface::VERBOSITY_VERBOSE);
-                $documentWorkspaces[] = $this->workspaceBuilder->buildDocumentWorkspace($folder, $permissions);
-            }
-
-            $role->setWorkspacesDocument($documentWorkspaces);
-        }
-        else {
-            $role->setWorkspacesDocument([]);
+            $role->$setFunc([]);
         }
     }
 }
