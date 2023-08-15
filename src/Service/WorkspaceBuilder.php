@@ -2,6 +2,7 @@
 
 namespace TorqIT\RoleCreatorBundle\Service;
 
+use Pimcore\Model\Document;
 use Pimcore\Model\Document\Folder as DocumentFolder;
 use Pimcore\Model\Asset\Folder as AssetFolder;
 use Pimcore\Model\DataObject\Folder as DataObjectFolder;
@@ -58,6 +59,12 @@ class WorkspaceBuilder
     public function buildDocumentWorkspace(string $folderName, array $permissions)
     {
         $folder = DocumentFolder::getByPath($folderName);
+
+        if(!$folder)
+        {
+            $folder = Document::getByPath($folderName);
+        }
+
         $this->throwIfNull($folder, $folderName);
 
         $workspace = new Workspace\Document();
