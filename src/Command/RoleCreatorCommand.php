@@ -93,6 +93,10 @@ class RoleCreatorCommand extends AbstractCommand
         {
             $role->setPermissions($this->permissionKeys);
         }
+        else
+        {
+            $role->setPermissions([]);
+        }
     }
 
     private function applyWorkspaces(Role $role, array $roleProperties)
