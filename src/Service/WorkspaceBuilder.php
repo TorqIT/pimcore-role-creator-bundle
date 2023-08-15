@@ -2,10 +2,9 @@
 
 namespace TorqIT\RoleCreatorBundle\Service;
 
+use Pimcore\Model\Asset;
+use Pimcore\Model\DataObject;
 use Pimcore\Model\Document;
-use Pimcore\Model\Document\Folder as DocumentFolder;
-use Pimcore\Model\Asset\Folder as AssetFolder;
-use Pimcore\Model\DataObject\Folder as DataObjectFolder;
 use Pimcore\Model\Exception\NotFoundException;
 use Pimcore\Model\User\Role;
 use Pimcore\Model\User\Workspace;
@@ -27,7 +26,7 @@ class WorkspaceBuilder
     /** @param string[] $permissions */
     public function buildObjectWorkspace(string $folderName, array $permissions)
     {
-        $folder = DataObjectFolder::getByPath($folderName);
+        $folder = DataObject::getByPath($folderName);
         $this->throwIfNull($folder, $folderName);
 
         $workspace = new Workspace\DataObject();
@@ -44,7 +43,7 @@ class WorkspaceBuilder
     /** @param string[] $permissions */
     public function buildAssetWorkspace(string $folderName, array $permissions)
     {
-        $folder = AssetFolder::getByPath($folderName);
+        $folder = Asset::getByPath($folderName);
         $this->throwIfNull($folder, $folderName);
 
         $workspace = new Workspace\Asset();
@@ -58,13 +57,7 @@ class WorkspaceBuilder
     /** @param string[] $permissions */
     public function buildDocumentWorkspace(string $folderName, array $permissions)
     {
-        $folder = DocumentFolder::getByPath($folderName);
-
-        if(!$folder)
-        {
-            $folder = Document::getByPath($folderName);
-        }
-
+        $folder = Document::getByPath($folderName);
         $this->throwIfNull($folder, $folderName);
 
         $workspace = new Workspace\Document();
