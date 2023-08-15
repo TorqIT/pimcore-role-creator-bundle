@@ -27,7 +27,7 @@ class WorkspaceBuilder
     public function buildObjectWorkspace(string $folderName, array $permissions)
     {
         $folder = DataObject::getByPath($folderName);
-        $this->throwIfNull($folder, $folderName);
+        $this->throwIfNull($folder, "data object", $folderName);
 
         $workspace = new Workspace\DataObject();
         $workspace->setCid($folder->getId());
@@ -44,7 +44,7 @@ class WorkspaceBuilder
     public function buildAssetWorkspace(string $folderName, array $permissions)
     {
         $folder = Asset::getByPath($folderName);
-        $this->throwIfNull($folder, $folderName);
+        $this->throwIfNull($folder, "asset", $folderName);
 
         $workspace = new Workspace\Asset();
         $workspace->setCid($folder->getId());
@@ -58,7 +58,7 @@ class WorkspaceBuilder
     public function buildDocumentWorkspace(string $folderName, array $permissions)
     {
         $folder = Document::getByPath($folderName);
-        $this->throwIfNull($folder, $folderName);
+        $this->throwIfNull($folder, "document", $folderName);
 
         $workspace = new Workspace\Document();
         $workspace->setCid($folder->getId());
@@ -85,11 +85,11 @@ class WorkspaceBuilder
         $workspace->setProperties(in_array(self::PROPERTIES, $permissions));
     }
 
-    private function throwIfNull($folder, $path)
+    private function throwIfNull($folder, $type, $path)
     {
         if(!$folder)
         {
-            throw new NotFoundException("Could not find folder with path '$path'");
+            throw new NotFoundException("Could not $type path '$path'");
         }
     }
 }
