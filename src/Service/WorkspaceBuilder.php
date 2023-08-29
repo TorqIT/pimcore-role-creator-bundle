@@ -31,6 +31,7 @@ class WorkspaceBuilder
 
         $workspace = new Workspace\DataObject();
         $workspace->setCid($folder->getId());
+        $workspace->setCpath($folder->getFullPath());
 
         $workspace->setSave($permissions === true || in_array(self::SAVE, $permissions));
         $workspace->setUnpublish($permissions === true || in_array(self::UNPUBLISH, $permissions));
@@ -48,6 +49,7 @@ class WorkspaceBuilder
 
         $workspace = new Workspace\Asset();
         $workspace->setCid($folder->getId());
+        $workspace->setCpath($folder->getFullPath());
 
         $this->setCommonWorkspaceAttributes($workspace, $permissions);
 
@@ -62,6 +64,7 @@ class WorkspaceBuilder
 
         $workspace = new Workspace\Document();
         $workspace->setCid($folder->getId());
+        $workspace->setCpath($folder->getFullPath());
 
         $workspace->setSave($permissions === true || in_array(self::SAVE, $permissions));
         $workspace->setUnpublish($permissions === true || in_array(self::UNPUBLISH, $permissions));
