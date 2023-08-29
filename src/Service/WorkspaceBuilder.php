@@ -24,7 +24,7 @@ class WorkspaceBuilder
     private const PROPERTIES = "properties";
 
     /** @param string[] $permissions */
-    public function buildObjectWorkspace(string $folderName, array $permissions)
+    public function buildObjectWorkspace(string $folderName, array|bool $permissions)
     {
         $folder = DataObject::getByPath($folderName);
         $this->throwIfNull($folder, "data object", $folderName);
@@ -32,8 +32,8 @@ class WorkspaceBuilder
         $workspace = new Workspace\DataObject();
         $workspace->setCid($folder->getId());
 
-        $workspace->setSave(in_array(self::SAVE, $permissions));
-        $workspace->setUnpublish(in_array(self::UNPUBLISH, $permissions));
+        $workspace->setSave($permissions === true || in_array(self::SAVE, $permissions));
+        $workspace->setUnpublish($permissions === true || in_array(self::UNPUBLISH, $permissions));
 
         $this->setCommonWorkspaceAttributes($workspace, $permissions);
 
@@ -41,7 +41,7 @@ class WorkspaceBuilder
     }
 
     /** @param string[] $permissions */
-    public function buildAssetWorkspace(string $folderName, array $permissions)
+    public function buildAssetWorkspace(string $folderName, array|bool $permissions)
     {
         $folder = Asset::getByPath($folderName);
         $this->throwIfNull($folder, "asset", $folderName);
@@ -55,7 +55,7 @@ class WorkspaceBuilder
     }
 
     /** @param string[] $permissions */
-    public function buildDocumentWorkspace(string $folderName, array $permissions)
+    public function buildDocumentWorkspace(string $folderName, array|bool $permissions)
     {
         $folder = Document::getByPath($folderName);
         $this->throwIfNull($folder, "document", $folderName);
@@ -63,8 +63,8 @@ class WorkspaceBuilder
         $workspace = new Workspace\Document();
         $workspace->setCid($folder->getId());
 
-        $workspace->setSave(in_array(self::SAVE, $permissions));
-        $workspace->setUnpublish(in_array(self::UNPUBLISH, $permissions));
+        $workspace->setSave($permissions === true || in_array(self::SAVE, $permissions));
+        $workspace->setUnpublish($permissions === true || in_array(self::UNPUBLISH, $permissions));
 
         $this->setCommonWorkspaceAttributes($workspace, $permissions);
 
@@ -72,17 +72,17 @@ class WorkspaceBuilder
     }
 
     /** @param string[] $permissions */
-    public function setCommonWorkspaceAttributes(Workspace\AbstractWorkspace $workspace, array $permissions)
+    public function setCommonWorkspaceAttributes(Workspace\AbstractWorkspace $workspace, array|bool $permissions)
     {
-        $workspace->setList(in_array(self::LIST, $permissions));
-        $workspace->setView(in_array(self::VIEW, $permissions));
-        $workspace->setPublish(in_array(self::PUBLISH, $permissions));
-        $workspace->setDelete(in_array(self::DELETE, $permissions));
-        $workspace->setRename(in_array(self::RENAME, $permissions));
-        $workspace->setCreate(in_array(self::CREATE, $permissions));
-        $workspace->setSettings(in_array(self::SETTINGS, $permissions));
-        $workspace->setVersions(in_array(self::VERSIONS, $permissions));
-        $workspace->setProperties(in_array(self::PROPERTIES, $permissions));
+        $workspace->setList($permissions === true || in_array(self::LIST, $permissions));
+        $workspace->setView($permissions === true || in_array(self::VIEW, $permissions));
+        $workspace->setPublish($permissions === true || in_array(self::PUBLISH, $permissions));
+        $workspace->setDelete($permissions === true || in_array(self::DELETE, $permissions));
+        $workspace->setRename($permissions === true || in_array(self::RENAME, $permissions));
+        $workspace->setCreate($permissions === true || in_array(self::CREATE, $permissions));
+        $workspace->setSettings($permissions === true || in_array(self::SETTINGS, $permissions));
+        $workspace->setVersions($permissions === true || in_array(self::VERSIONS, $permissions));
+        $workspace->setProperties($permissions === true || in_array(self::PROPERTIES, $permissions));
     }
 
     private function throwIfNull($folder, $type, $path)

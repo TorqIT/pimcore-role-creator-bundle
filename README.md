@@ -79,6 +79,15 @@ system_roles:
         /articles: ["list", "view"]
 ```
 
+Alternatively, you can pass `true` to a workspace, which will enable all of the permissions
+
+```yaml
+ ...
+    workspaces:
+      data_objects:
+        /articles: true
+```
+
 ### Allowed Document Types & Classes
 
 You can specify the allowed document types and classes per role using the following structure:
