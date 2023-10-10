@@ -1,4 +1,4 @@
-# pimcore-admin-role-creator-bundle
+# Pimcore Role Creator bundle
 
 ## Getting started
 
