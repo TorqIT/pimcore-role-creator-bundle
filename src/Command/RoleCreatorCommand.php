@@ -30,16 +30,16 @@ class RoleCreatorCommand extends AbstractCommand
             ->setDescription('Command for creating user roles in the pimcore admin interface.');
     }
 
-    protected function initialize(InputInterface $input, OutputInterface $output)
+    protected function initialize(InputInterface $input, OutputInterface $output): void
     {
         parent::initialize($input, $output);
 
         $this->permissionKeys = array_map(fn(Definition $d) => $d->getKey(),(new Definition\Listing())->load());
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $roleFileLocation = PIMCORE_PROJECT_ROOT . '/config/roles.yml';
+        $roleFileLocation = PIMCORE_PROJECT_ROOT . '/config/roles.yaml';
         $myConfig = new Config();
         $roleStructureArray = $myConfig->getConfigInstance($roleFileLocation, true);
 
@@ -53,7 +53,7 @@ class RoleCreatorCommand extends AbstractCommand
         return 0;
     }
 
-    private function createOrUpdateRole($roleName, $roleProperties)
+    private function createOrUpdateRole($roleName, $roleProperties): void
     {
         $role = Role::getByName($roleName);
 
@@ -74,7 +74,7 @@ class RoleCreatorCommand extends AbstractCommand
         $role->save();
     }
 
-    private function applyPermissions(Role $role, array $roleProperties)
+    private function applyPermissions(Role $role, array $roleProperties): void
     {
         if(key_exists("included_permissions", $roleProperties))
         {
@@ -103,7 +103,7 @@ class RoleCreatorCommand extends AbstractCommand
         }
     }
 
-    private function applyWorkspaces(Role $role, array $roleProperties)
+    private function applyWorkspaces(Role $role, array $roleProperties): void
     {
         if(!key_exists("workspaces", $roleProperties))
         {
@@ -121,7 +121,7 @@ class RoleCreatorCommand extends AbstractCommand
     }
 
     //A bit ugly, but it saves SO much room
-    private function buildAndSetWorkspaces(array $workspaces, Role $role, string $propertyKey, string $workspaceType, string $workspacePrettyName)
+    private function buildAndSetWorkspaces(array $workspaces, Role $role, string $propertyKey, string $workspaceType, string $workspacePrettyName): void
     {
         $setFunc = "setWorkspaces{$workspaceType}";
 
@@ -143,7 +143,7 @@ class RoleCreatorCommand extends AbstractCommand
         }
     }
 
-    private function applyAllowedTypes(Role $role, array $roleProperties)
+    private function applyAllowedTypes(Role $role, array $roleProperties): void
     {
         if(!key_exists("allowedTypes", $roleProperties))
         {
@@ -197,7 +197,7 @@ class RoleCreatorCommand extends AbstractCommand
     }
 
     /** @param DocType[] $docTypes */
-    private function findDocWithName(string $name, array $docTypes)
+    private function findDocWithName(string $name, array $docTypes): ?DocType
     {
         foreach($docTypes as $docType)
         {
