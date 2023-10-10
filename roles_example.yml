@@ -1,11 +1,16 @@
 system_roles:
-    My_Role:
-        - Permissions:
-              - NOT_IMPLEMENTED
-        - Workspaces:
-              - NOT_IMPLEMENTED
-    Another_Role:
-        - Permissions:
-              - NOT_IMPLEMENTED
-        - Workspaces:
-              - NOT_IMPLEMENTED
+  Manager:
+    all_permissions: true
+    workspaces:
+      data_objects:
+        /: true
+      assets:
+        /: true
+      documents:
+        /: true
+  Employee:
+    workspaces:
+      data_objects:
+        /: ["list", "view", "create", "save", "publish"]
+      assets:
+        /: ["list", "view"]
