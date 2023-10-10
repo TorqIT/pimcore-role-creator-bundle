@@ -3,13 +3,13 @@
 ## Getting started
 
 1. This bundle is easily installed via composer: `composer require torqit/pimcore-role-creator-bundle`
-2. In your config folder, add a `roles.yml` file. Instructions on how to set up your roles is given below in the Roles Setup section.
+2. In your config folder, add a `roles.yaml` file. Instructions on how to set up your roles is given below in the Roles Setup section.
 4. Make sure you register the `RoleCreatorBundle` in your `AppKernel.php` located at `\src\pimcore-root\app\AppKernel.php`. Registering the bundle is as easy as adding a line in the registerBundlesToCollection function, like so: `$collection->addBundle(new \TorqIT\RoleCreatorBundle\RoleCreatorBundle);`
 5. Run the bundle, with the command: `./bin/console torq:generate-roles`
 
 ## Role Setup
 
-For this example, let's say we want to add `Manager` and `Employee` roles to our app. In your config folder, add a `roles.yml` file with the following layout:
+For this example, let's say we want to add `Manager` and `Employee` roles to our app. In your config folder, add a `roles.yaml` file with the following layout:
 
 ```yaml
 system_roles:

@@ -1,0 +1,16 @@
+system_roles:
+  Manager:
+    all_permissions: true
+    workspaces:
+      data_objects:
+        /: true
+      assets:
+        /: true
+      documents:
+        /: true
+  Employee:
+    workspaces:
+      data_objects:
+        /: ["list", "view", "create", "save", "publish"]
+      assets:
+        /: ["list", "view"]
