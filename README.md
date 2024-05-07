@@ -110,3 +110,13 @@ system_roles:
 ```
 
 > **Note:** The default behavior for pimcore is that if no allowed class/doc types are specified, then _all_ classes and doc types are allowed. If you need to restrict all creation, you may need to configure it at the workspace level.
+
+### Allowed Perspectives
+
+You can specify the allowed perspectives on a role by adding perspectives to an array of strings:
+
+```yaml
+perspectives: ["Default"]
+```
+
+If you don't specify a list of perspectives, than it will clear all previously selected perspectives.

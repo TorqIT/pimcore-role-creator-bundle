@@ -68,6 +68,7 @@ class RoleCreatorCommand extends AbstractCommand
         $this->applyPermissions($role, $roleProperties ?? []);
         $this->applyWorkspaces($role, $roleProperties ?? []);
         $this->applyAllowedTypes($role, $roleProperties ?? []);
+        $this->applyPerspectives($role, $roleProperties ?? []);
 
         $role->setParentId(0);
         $role->setName($roleName);
@@ -208,5 +209,10 @@ class RoleCreatorCommand extends AbstractCommand
         }
 
         return null;
+    }
+
+    private function applyPerspectives(Role $role, array $roleProperties): void
+    {
+        $role->setPerspectives($roleProperties["perspectives"] ?? []);
     }
 }
