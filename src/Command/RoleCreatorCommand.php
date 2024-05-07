@@ -213,11 +213,6 @@ class RoleCreatorCommand extends AbstractCommand
 
     private function applyPerspectives(Role $role, array $roleProperties): void
     {
-        if (!key_exists("perspectives", $roleProperties)) {
-            $role->setPerspectives([]);
-            return;
-        }
-
-        $role->setPerspectives($roleProperties["perspectives"]);
+        $role->setPerspectives($roleProperties["perspectives"] ?? []);
     }
 }
