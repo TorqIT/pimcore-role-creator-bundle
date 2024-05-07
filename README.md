@@ -113,7 +113,7 @@ system_roles:
 
 ### Allowed Perspectives
 
-You can specific the allowed perspectives on a role by adding perspectives to an array of strings:
+You can specify the allowed perspectives on a role by adding perspectives to an array of strings:
 
 ```yaml
 perspectives: ["Default"]
