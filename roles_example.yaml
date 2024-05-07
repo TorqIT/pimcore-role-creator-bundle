@@ -9,6 +9,7 @@ system_roles:
       documents:
         /: true
   Employee:
+    perspectives: ['Default']
     workspaces:
       data_objects:
         /: ["list", "view", "create", "save", "publish"]
