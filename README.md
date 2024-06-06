@@ -4,8 +4,8 @@
 
 1. This bundle is easily installed via composer: `composer require torqit/pimcore-role-creator-bundle`
 2. In your config folder, add a `roles.yaml` file. Instructions on how to set up your roles is given below in the Roles Setup section.
-4. Make sure you register the `RoleCreatorBundle` in your `AppKernel.php` located at `\src\pimcore-root\app\AppKernel.php`. Registering the bundle is as easy as adding a line in the registerBundlesToCollection function, like so: `$collection->addBundle(new \TorqIT\RoleCreatorBundle\RoleCreatorBundle);`
-5. Run the bundle, with the command: `./bin/console torq:generate-roles`
+3. Make sure you register the `RoleCreatorBundle` in your `AppKernel.php` located at `\src\pimcore-root\app\AppKernel.php`. Registering the bundle is as easy as adding a line in the registerBundlesToCollection function, like so: `$collection->addBundle(new \TorqIT\RoleCreatorBundle\RoleCreatorBundle);`
+4. Run the bundle, with the command: `./bin/console torq:generate-roles`
 
 ## Role Setup
 
@@ -22,6 +22,7 @@ This will create `Manager` and `Employee` roles, both with no permissions, works
 ### Basic Permissions
 
 Using the permissions specified in the `user_permission_definitions` table, you can specify basic permissions per role using one of three variables:
+
 - `included_permissions: []` An array of allowed permissions
 - `excluded_permissions: []` Include all permissions on a role _except_ for the ones specified
 - `all_permissions:` Include all permissions
@@ -43,7 +44,12 @@ You can specify data object, asset and document workspaces using the following s
 ```yaml
 workspaces:
   data_objects:
-    /folderName: []
+    /folderName:
+      permissions: []
+      special_configs:
+        localized_edit: "fr_CA"
+        localized_view: "en,fr_CA"
+        custom_layouts: "object_ProductLayout,object_SupplierLayout"
   assets:
     /folderName: []
   documents:
@@ -51,6 +57,7 @@ workspaces:
 ```
 
 Where `folderName` is the full path to the folder for that workspace. Each workspace array can be populated with the following currently supported permissions:
+
 - `list`
 - `view`
 - `save` (Documents/Data Objects Only)
@@ -74,7 +81,8 @@ system_roles:
   Employee:
     workspaces:
       data_objects:
-        /articles: ["list", "view", "create", "save", "publish"]
+        /articles:
+          permissions: ["list", "view", "create", "save", "publish"]
       assets:
         /articles: ["list", "view"]
 ```
@@ -85,7 +93,24 @@ Alternatively, you can pass `true` to a workspace, which will enable all of the 
  ...
     workspaces:
       data_objects:
-        /articles: true
+        /articles:
+          permissions: true
+```
+
+You can specify special configurations per data object workspace:
+
+- Custom layouts
+- Localization
+
+```yaml
+ ...
+    workspaces:
+      data_objects:
+        /articles:
+          special_configs:
+            localized_edit: "fr_CA"
+            localized_view: "en,fr_CA"
+            custom_layouts: "object_ProductLayout,object_SupplierLayout"
 ```
 
 ### Allowed Document Types & Classes
