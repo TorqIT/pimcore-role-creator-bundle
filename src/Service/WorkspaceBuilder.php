@@ -26,8 +26,7 @@ class WorkspaceBuilder
     private const OBJECT_LOCALIZED_VIEW = "localized_view";
     private const OBJECT_CUSTOM_LAYOUTS = "custom_layouts";
 
-    /** @param string[] $permissions */
-    public function buildObjectWorkspace(string $folderName, array|bool $permissions)
+    public function buildObjectWorkspace(string $folderName, ?array $workspaceConfig)
     {
         $folder = DataObject::getByPath($folderName);
         $this->throwIfNull($folder, "data object", $folderName);
