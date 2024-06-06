@@ -6,7 +6,6 @@ use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject;
 use Pimcore\Model\Document;
 use Pimcore\Model\Exception\NotFoundException;
-use Pimcore\Model\User\Role;
 use Pimcore\Model\User\Workspace;
 
 class WorkspaceBuilder
@@ -23,6 +22,10 @@ class WorkspaceBuilder
     private const VERSIONS = "versions";
     private const PROPERTIES = "properties";
 
+    private const OBJECT_LOCALIZED_EDIT = "localized_edit";
+    private const OBJECT_LOCALIZED_VIEW = "localized_view";
+    private const OBJECT_CUSTOM_LAYOUTS = "custom_layouts";
+
     /** @param string[] $permissions */
     public function buildObjectWorkspace(string $folderName, array|bool $permissions)
     {
@@ -33,10 +36,16 @@ class WorkspaceBuilder
         $workspace->setCid($folder->getId());
         $workspace->setCpath($folder->getFullPath());
 
+        $permissions = isset($workspaceConfig['permissions']) ? $workspaceConfig['permissions'] : false;
         $workspace->setSave($permissions === true || in_array(self::SAVE, $permissions));
         $workspace->setUnpublish($permissions === true || in_array(self::UNPUBLISH, $permissions));
 
         $this->setCommonWorkspaceAttributes($workspace, $permissions);
+
+        $specialConfig = isset($workspaceConfig['special_configs']) ? $workspaceConfig['special_configs'] : false;
+        $workspace->setLEdit(isset($specialConfig[self::OBJECT_LOCALIZED_EDIT]) ? $specialConfig[self::OBJECT_LOCALIZED_EDIT] : null);
+        $workspace->setLView(isset($specialConfig[self::OBJECT_LOCALIZED_VIEW]) ? $specialConfig[self::OBJECT_LOCALIZED_VIEW] : null);
+        $workspace->setLayouts(isset($specialConfig[self::OBJECT_CUSTOM_LAYOUTS]) ? $specialConfig[self::OBJECT_CUSTOM_LAYOUTS] : null);
 
         return $workspace;
     }
@@ -90,8 +99,7 @@ class WorkspaceBuilder
 
     private function throwIfNull($folder, $type, $path)
     {
-        if(!$folder)
-        {
+        if (!$folder) {
             throw new NotFoundException("Could not find $type path '$path'");
         }
     }

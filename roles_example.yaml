@@ -3,7 +3,12 @@ system_roles:
     all_permissions: true
     workspaces:
       data_objects:
-        /: true
+        /: 
+          permissions: true
+          special_configs: 
+            localized_edit: "fr_CA"
+            localized_view: "en,fr_CA"
+            custom_layouts: "object_ProductLayout,object_SupplierLayout"
       assets:
         /: true
       documents:
@@ -12,6 +17,7 @@ system_roles:
     perspectives: ['Default']
     workspaces:
       data_objects:
-        /: ["list", "view", "create", "save", "publish"]
+        /: 
+          permissions: ["list", "view", "create", "save", "publish"]
       assets:
         /: ["list", "view"]
