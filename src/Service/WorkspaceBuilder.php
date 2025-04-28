@@ -7,25 +7,10 @@ use Pimcore\Model\DataObject;
 use Pimcore\Model\Document;
 use Pimcore\Model\Exception\NotFoundException;
 use Pimcore\Model\User\Workspace;
+use TorqIT\RoleCreatorBundle\Enum\WorkspaceBuilderEnum;
 
 class WorkspaceBuilder
 {
-    private const LIST = "list";
-    private const VIEW = "view";
-    private const SAVE = "save";
-    private const PUBLISH = "publish";
-    private const UNPUBLISH = "unpublish";
-    private const DELETE = "delete";
-    private const RENAME = "rename";
-    private const CREATE = "create";
-    private const SETTINGS = "settings";
-    private const VERSIONS = "versions";
-    private const PROPERTIES = "properties";
-
-    private const OBJECT_LOCALIZED_EDIT = "localized_edit";
-    private const OBJECT_LOCALIZED_VIEW = "localized_view";
-    private const OBJECT_CUSTOM_LAYOUTS = "custom_layouts";
-
     public function buildObjectWorkspace(string $folderName, ?array $workspaceConfig)
     {
         $folder = DataObject::getByPath($folderName);
@@ -36,15 +21,15 @@ class WorkspaceBuilder
         $workspace->setCpath($folder->getFullPath());
 
         $permissions = isset($workspaceConfig['permissions']) ? $workspaceConfig['permissions'] : false;
-        $workspace->setSave($permissions === true || in_array(self::SAVE, $permissions));
-        $workspace->setUnpublish($permissions === true || in_array(self::UNPUBLISH, $permissions));
+        $workspace->setSave($permissions === true || in_array(WorkspaceBuilderEnum::SAVE->value, $permissions));
+        $workspace->setUnpublish($permissions === true || in_array(WorkspaceBuilderEnum::UNPUBLISH->value, $permissions));
 
         $this->setCommonWorkspaceAttributes($workspace, $permissions);
 
         $specialConfig = isset($workspaceConfig['special_configs']) ? $workspaceConfig['special_configs'] : false;
-        $workspace->setLEdit(isset($specialConfig[self::OBJECT_LOCALIZED_EDIT]) ? $specialConfig[self::OBJECT_LOCALIZED_EDIT] : null);
-        $workspace->setLView(isset($specialConfig[self::OBJECT_LOCALIZED_VIEW]) ? $specialConfig[self::OBJECT_LOCALIZED_VIEW] : null);
-        $workspace->setLayouts(isset($specialConfig[self::OBJECT_CUSTOM_LAYOUTS]) ? $specialConfig[self::OBJECT_CUSTOM_LAYOUTS] : null);
+        $workspace->setLEdit(isset($specialConfig[WorkspaceBuilderEnum::OBJECT_LOCALIZED_EDIT->value]) ? $specialConfig[WorkspaceBuilderEnum::OBJECT_LOCALIZED_EDIT->value] : null);
+        $workspace->setLView(isset($specialConfig[WorkspaceBuilderEnum::OBJECT_LOCALIZED_VIEW->value]) ? $specialConfig[WorkspaceBuilderEnum::OBJECT_LOCALIZED_VIEW->value] : null);
+        $workspace->setLayouts(isset($specialConfig[WorkspaceBuilderEnum::OBJECT_CUSTOM_LAYOUTS->value]) ? $specialConfig[WorkspaceBuilderEnum::OBJECT_CUSTOM_LAYOUTS->value] : null);
 
         return $workspace;
     }
@@ -74,8 +59,8 @@ class WorkspaceBuilder
         $workspace->setCid($folder->getId());
         $workspace->setCpath($folder->getFullPath());
 
-        $workspace->setSave($permissions === true || in_array(self::SAVE, $permissions));
-        $workspace->setUnpublish($permissions === true || in_array(self::UNPUBLISH, $permissions));
+        $workspace->setSave($permissions === true || in_array(WorkspaceBuilderEnum::SAVE->value, $permissions));
+        $workspace->setUnpublish($permissions === true || in_array(WorkspaceBuilderEnum::UNPUBLISH->value, $permissions));
 
         $this->setCommonWorkspaceAttributes($workspace, $permissions);
 
@@ -85,15 +70,15 @@ class WorkspaceBuilder
     /** @param string[] $permissions */
     public function setCommonWorkspaceAttributes(Workspace\AbstractWorkspace $workspace, array|bool $permissions)
     {
-        $workspace->setList($permissions === true || in_array(self::LIST, $permissions));
-        $workspace->setView($permissions === true || in_array(self::VIEW, $permissions));
-        $workspace->setPublish($permissions === true || in_array(self::PUBLISH, $permissions));
-        $workspace->setDelete($permissions === true || in_array(self::DELETE, $permissions));
-        $workspace->setRename($permissions === true || in_array(self::RENAME, $permissions));
-        $workspace->setCreate($permissions === true || in_array(self::CREATE, $permissions));
-        $workspace->setSettings($permissions === true || in_array(self::SETTINGS, $permissions));
-        $workspace->setVersions($permissions === true || in_array(self::VERSIONS, $permissions));
-        $workspace->setProperties($permissions === true || in_array(self::PROPERTIES, $permissions));
+        $workspace->setList($permissions === true || in_array(WorkspaceBuilderEnum::LIST->value, $permissions));
+        $workspace->setView($permissions === true || in_array(WorkspaceBuilderEnum::VIEW->value, $permissions));
+        $workspace->setPublish($permissions === true || in_array(WorkspaceBuilderEnum::PUBLISH->value, $permissions));
+        $workspace->setDelete($permissions === true || in_array(WorkspaceBuilderEnum::DELETE->value, $permissions));
+        $workspace->setRename($permissions === true || in_array(WorkspaceBuilderEnum::RENAME->value, $permissions));
+        $workspace->setCreate($permissions === true || in_array(WorkspaceBuilderEnum::CREATE->value, $permissions));
+        $workspace->setSettings($permissions === true || in_array(WorkspaceBuilderEnum::SETTINGS->value, $permissions));
+        $workspace->setVersions($permissions === true || in_array(WorkspaceBuilderEnum::VERSIONS->value, $permissions));
+        $workspace->setProperties($permissions === true || in_array(WorkspaceBuilderEnum::PROPERTIES->value, $permissions));
     }
 
     private function throwIfNull($folder, $type, $path)

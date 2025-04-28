@@ -10,7 +10,7 @@ use Pimcore\Model\User\Permission\Definition;
 use Pimcore\Model\User\Role;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Config\Pimcore\ConfigLocation\DocumentTypesConfig;
+use TorqIT\RoleCreatorBundle\Service\RoleConfigService;
 use TorqIT\RoleCreatorBundle\Service\WorkspaceBuilder;
 
 class RoleCreatorCommand extends AbstractCommand
@@ -18,7 +18,8 @@ class RoleCreatorCommand extends AbstractCommand
     private array $permissionKeys;
 
     public function __construct(
-      private WorkspaceBuilder $workspaceBuilder
+        private WorkspaceBuilder $workspaceBuilder,
+        private RoleConfigService $roleConfigService
     ) {
         parent::__construct();
     }
@@ -34,12 +35,12 @@ class RoleCreatorCommand extends AbstractCommand
     {
         parent::initialize($input, $output);
 
-        $this->permissionKeys = array_map(fn(Definition $d) => $d->getKey(),(new Definition\Listing())->load());
+        $this->permissionKeys = array_map(fn(Definition $d) => $d->getKey(), (new Definition\Listing())->load());
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $roleFileLocation = PIMCORE_PROJECT_ROOT . '/config/roles.yaml';
+        $roleFileLocation = $this->roleConfigService->getRolesFilePath();
         $myConfig = new Config();
         $roleStructureArray = $myConfig->getConfigInstance($roleFileLocation, true);
 
@@ -60,8 +61,7 @@ class RoleCreatorCommand extends AbstractCommand
         if (!$role) {
             $this->output->writeln("Creating new role: $roleName");
             $role = new Role();
-        }
-        else {
+        } else {
             $this->output->writeln("Updating role: $roleName");
         }
 
@@ -77,37 +77,28 @@ class RoleCreatorCommand extends AbstractCommand
 
     private function applyPermissions(Role $role, array $roleProperties): void
     {
-        if(key_exists("included_permissions", $roleProperties))
-        {
+        if (key_exists("included_permissions", $roleProperties)) {
             $nonExistentPermissions = array_diff($roleProperties["included_permissions"], $this->permissionKeys);
 
-            if(!empty($nonExistentPermissions))
-            {
+            if (!empty($nonExistentPermissions)) {
                 $unrecognizedPermissions = implode(", ", $nonExistentPermissions);
                 $this->output->writeln("<comment>WARNING: Found unrecognized permissions ($unrecognizedPermissions)</comment>");
             }
 
             $role->setPermissions($roleProperties["included_permissions"]);
-        }
-        else if(key_exists("excluded_permissions", $roleProperties))
-        {
+        } else if (key_exists("excluded_permissions", $roleProperties)) {
             $targetPermissions = array_diff($this->permissionKeys, $roleProperties["excluded_permissions"]);
             $role->setPermissions($targetPermissions);
-        }
-        else if(key_exists("all_permissions", $roleProperties))
-        {
+        } else if (key_exists("all_permissions", $roleProperties)) {
             $role->setPermissions($this->permissionKeys);
-        }
-        else
-        {
+        } else {
             $role->setPermissions([]);
         }
     }
 
     private function applyWorkspaces(Role $role, array $roleProperties): void
     {
-        if(!key_exists("workspaces", $roleProperties))
-        {
+        if (!key_exists("workspaces", $roleProperties)) {
             $role->setWorkspacesObject([]);
             $role->setWorkspacesAsset([]);
             $role->setWorkspacesDocument([]);
@@ -126,28 +117,24 @@ class RoleCreatorCommand extends AbstractCommand
     {
         $setFunc = "setWorkspaces{$workspaceType}";
 
-        if(key_exists($propertyKey, $workspaces))
-        {
+        if (key_exists($propertyKey, $workspaces)) {
             $builtWorkspaces = [];
             $buildFunc = "build{$workspaceType}Workspace";
 
-            foreach($workspaces[$propertyKey] as $folder => $permissions)
-            {
+            foreach ($workspaces[$propertyKey] as $folder => $permissions) {
                 $this->output->writeln("Configuring $workspacePrettyName workspace for '$folder'", OutputInterface::VERBOSITY_VERBOSE);
                 $builtWorkspaces[] = $this->workspaceBuilder->$buildFunc($folder, $permissions);
             }
 
             $role->$setFunc($builtWorkspaces);
-        }
-        else {
+        } else {
             $role->$setFunc([]);
         }
     }
 
     private function applyAllowedTypes(Role $role, array $roleProperties): void
     {
-        if(!key_exists("allowedTypes", $roleProperties))
-        {
+        if (!key_exists("allowedTypes", $roleProperties)) {
             $role->setClasses([]);
             $role->setDocTypes([]);
             return;
@@ -155,44 +142,36 @@ class RoleCreatorCommand extends AbstractCommand
 
         $allowedTypes = $roleProperties["allowedTypes"];
 
-        if(key_exists("classes", $allowedTypes) && is_array($allowedTypes["classes"]))
-        {
+        if (key_exists("classes", $allowedTypes) && is_array($allowedTypes["classes"])) {
             $allowedClasses = [];
 
-            foreach($allowedTypes["classes"] as $className)
-            {
+            foreach ($allowedTypes["classes"] as $className) {
                 $classDef = ClassDefinition::getByName($className);
 
-                if($classDef)
-                {
+                if ($classDef) {
                     $allowedClasses[] = $classDef->getId();
                 }
             }
 
             $role->setClasses($allowedClasses);
-        }
-        else {
+        } else {
             $role->setClasses([]);
         }
 
-        if(key_exists("document_types", $allowedTypes) && is_array($allowedTypes["document_types"]))
-        {
+        if (key_exists("document_types", $allowedTypes) && is_array($allowedTypes["document_types"])) {
             $allowedDocs = [];
             $docTypes = (new DocType\Listing())->load();
 
-            foreach($allowedTypes["document_types"] as $docName)
-            {
+            foreach ($allowedTypes["document_types"] as $docName) {
                 $docType = $this->findDocWithName($docName, $docTypes);
 
-                if($docType)
-                {
+                if ($docType) {
                     $allowedDocs[] = $docType->getId();
                 }
             }
 
             $role->setDocTypes($allowedDocs);
-        }
-        else {
+        } else {
             $role->setDocTypes([]);
         }
     }
@@ -200,10 +179,8 @@ class RoleCreatorCommand extends AbstractCommand
     /** @param DocType[] $docTypes */
     private function findDocWithName(string $name, array $docTypes): ?DocType
     {
-        foreach($docTypes as $docType)
-        {
-            if($docType->getName() == $name)
-            {
+        foreach ($docTypes as $docType) {
+            if ($docType->getName() == $name) {
                 return $docType;
             }
         }
