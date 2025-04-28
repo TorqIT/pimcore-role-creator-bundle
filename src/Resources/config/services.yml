@@ -17,7 +17,7 @@ services:
         resource: "../../Service/*"
         public: true
 
-    TorqIT\EventListener\RoleListener:
+    TorqIT\RoleCreatorBundle\EventListener\RoleListener:
         tags:
         - {
             name: kernel.event_listener,
