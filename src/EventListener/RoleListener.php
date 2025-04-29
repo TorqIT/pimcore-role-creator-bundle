@@ -62,17 +62,13 @@ class RoleListener
                 $documentWorkspace->getUnpublish() && $permissions[] = WorkspaceBuilderEnum::UNPUBLISH->value;
                 $documentWorkspace->getSave() && $permissions[] = WorkspaceBuilderEnum::SAVE->value;
 
-                $newRoleData['workspaces']['documents'][$documentWorkspace->getCpath()] = [
-                    'permissions' => $permissions,
-                ];
+                $newRoleData['workspaces']['documents'][$documentWorkspace->getCpath()] = $permissions;
             }
         }
 
         foreach ($role->getWorkspacesAsset() as $assetWorkspace) {
             if ($assetWorkspace instanceof \Pimcore\Model\User\Workspace\Asset) {
-                $newRoleData['workspaces']['assets'][$assetWorkspace->getCpath()] = [
-                    'permissions' => $this->getCommonPermissionListFromWorkspace($assetWorkspace),
-                ];
+                $newRoleData['workspaces']['assets'][$assetWorkspace->getCpath()] = $this->getCommonPermissionListFromWorkspace($assetWorkspace);
             }
         }
 
