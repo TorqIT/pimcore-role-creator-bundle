@@ -22,10 +22,10 @@ services:
         - {
             name: kernel.event_listener,
             event: pimcore.user.postAdd,
-            method: onPostAdd,
+            method: onPostRoleUpdate,
             }
         - {
             name: kernel.event_listener,
             event: pimcore.user.postUpdate,
-            method: onPostUpdate,
+            method: onPostRoleUpdate,
             }

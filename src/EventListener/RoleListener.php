@@ -14,15 +14,7 @@ class RoleListener
 {
     public function __construct(private RoleConfigService $roleConfigService) {}
 
-    public function onPostAdd(UserRoleEvent $event): void
-    {
-        $userRole = $event->getUserRole();
-        if ($userRole instanceof Role) {
-            $this->updateRoleInYaml($userRole);
-        }
-    }
-
-    public function onPostUpdate(UserRoleEvent $event): void
+    public function onPostRoleUpdate(UserRoleEvent $event): void
     {
         $userRole = $event->getUserRole();
         if ($userRole instanceof Role) {
