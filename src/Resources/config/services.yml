@@ -16,3 +16,16 @@ services:
     TorqIT\RoleCreatorBundle\Service\:
         resource: "../../Service/*"
         public: true
+
+    TorqIT\RoleCreatorBundle\EventListener\RoleListener:
+        tags:
+        - {
+            name: kernel.event_listener,
+            event: pimcore.user.postAdd,
+            method: onPostRoleUpdate,
+            }
+        - {
+            name: kernel.event_listener,
+            event: pimcore.user.postUpdate,
+            method: onPostRoleUpdate,
+            }
