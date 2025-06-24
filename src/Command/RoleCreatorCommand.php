@@ -146,7 +146,7 @@ class RoleCreatorCommand extends AbstractCommand
             $allowedClasses = [];
 
             foreach ($allowedTypes["classes"] as $className) {
-                $classDef = ClassDefinition::getByName($className);
+                $classDef = ClassDefinition::getById($className);
 
                 if ($classDef) {
                     $allowedClasses[] = $classDef->getId();
