@@ -148,7 +148,6 @@ If you don't specify a list of perspectives, than it will clear all previously s
 
 # License
 
-
 This bundle is licensed under the Pimcore Open Core License (POCL)
 and is intended for use with Pimcore Platform 2025.1 and newer.
 
