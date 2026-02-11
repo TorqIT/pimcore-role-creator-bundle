@@ -1,5 +1,5 @@
 {
-    "license": "POCL",
+    "license": "proprietary",
     "name": "torqit/pimcore-role-creator-bundle",
     "type": "pimcore-bundle",
     "require": {
