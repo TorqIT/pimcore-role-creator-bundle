@@ -7,6 +7,18 @@
 3. Make sure you register the `RoleCreatorBundle` in your `AppKernel.php` located at `\src\pimcore-root\app\AppKernel.php`. Registering the bundle is as easy as adding a line in the registerBundlesToCollection function, like so: `$collection->addBundle(new \TorqIT\RoleCreatorBundle\RoleCreatorBundle);`
 4. Run the bundle, with the command: `./bin/console torq:generate-roles`
 
+## Command Options
+
+| Option | Description |
+|---|---|
+| `--without-events` | Suppresses all role event listeners (`preAdd`, `postAdd`, `preUpdate`, `postUpdate`) during execution. Useful when you want to avoid triggering custom event listeners while importing or syncing roles. |
+
+Example:
+
+```bash
+./bin/console torq:generate-roles --without-events
+```
+
 ## Role Setup
 
 For this example, let's say we want to add `Manager` and `Employee` roles to our app. In your config folder, add a `roles.yaml` file with the following layout:
