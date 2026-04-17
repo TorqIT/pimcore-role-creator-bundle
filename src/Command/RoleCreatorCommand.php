@@ -4,12 +4,15 @@ namespace TorqIT\RoleCreatorBundle\Command;
 
 use Pimcore\Config;
 use Pimcore\Console\AbstractCommand;
+use Pimcore\Event\UserRoleEvents;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\Document\DocType;
 use Pimcore\Model\User\Permission\Definition;
 use Pimcore\Model\User\Role;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use TorqIT\RoleCreatorBundle\Service\RoleConfigService;
 use TorqIT\RoleCreatorBundle\Service\WorkspaceBuilder;
 
@@ -19,7 +22,8 @@ class RoleCreatorCommand extends AbstractCommand
 
     public function __construct(
         private WorkspaceBuilder $workspaceBuilder,
-        private RoleConfigService $roleConfigService
+        private RoleConfigService $roleConfigService,
+        private EventDispatcherInterface $eventDispatcher
     ) {
         parent::__construct();
     }
@@ -28,7 +32,8 @@ class RoleCreatorCommand extends AbstractCommand
     {
         $this
             ->setName('torq:generate-roles')
-            ->setDescription('Command for creating user roles in the pimcore admin interface.');
+            ->setDescription('Command for creating user roles in the pimcore admin interface.')
+            ->addOption('without-events', null, InputOption::VALUE_NONE, 'Suppress all role event listeners during execution.');
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output): void
@@ -40,6 +45,10 @@ class RoleCreatorCommand extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        if ($input->getOption('without-events')) {
+            $this->suppressRoleEvents();
+        }
+
         $roleFileLocation = $this->roleConfigService->getRolesFilePath();
         $myConfig = new Config();
         $roleStructureArray = $myConfig->getConfigInstance($roleFileLocation, true);
@@ -52,6 +61,22 @@ class RoleCreatorCommand extends AbstractCommand
         }
 
         return 0;
+    }
+
+    private function suppressRoleEvents(): void
+    {
+        $events = [
+            UserRoleEvents::PRE_ADD,
+            UserRoleEvents::POST_ADD,
+            UserRoleEvents::PRE_UPDATE,
+            UserRoleEvents::POST_UPDATE,
+        ];
+
+        foreach ($events as $eventName) {
+            foreach ($this->eventDispatcher->getListeners($eventName) as $listener) {
+                $this->eventDispatcher->removeListener($eventName, $listener);
+            }
+        }
     }
 
     private function createOrUpdateRole($roleName, $roleProperties): void
