@@ -3,7 +3,7 @@
     "name": "torqit/pimcore-role-creator-bundle",
     "type": "pimcore-bundle",
     "require": {
-        "pimcore/pimcore": "^11.0 || ^12.0"
+        "pimcore/pimcore": "^11.0 || ^12.0 || ^2026.1 "
     },
     "autoload": {
         "psr-4": {
