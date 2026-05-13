@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace TorqIT\RoleCreatorBundle\Command;
 
+use Pimcore\Bundle\StudioBackendBundle\User\Service\UserPerspectiveServiceInterface;
 use Pimcore\Config;
 use Pimcore\Console\AbstractCommand;
 use Pimcore\Event\UserRoleEvents;
@@ -23,7 +26,8 @@ class RoleCreatorCommand extends AbstractCommand
     public function __construct(
         private WorkspaceBuilder $workspaceBuilder,
         private RoleConfigService $roleConfigService,
-        private EventDispatcherInterface $eventDispatcher
+        private EventDispatcherInterface $eventDispatcher,
+        private ?UserPerspectiveServiceInterface $userPerspectiveService = null,
     ) {
         parent::__construct();
     }
@@ -98,6 +102,8 @@ class RoleCreatorCommand extends AbstractCommand
         $role->setParentId(0);
         $role->setName($roleName);
         $role->save();
+
+        $this->applyStudioPerspectives($role, $roleProperties ?? []);
     }
 
     private function applyPermissions(Role $role, array $roleProperties): void
@@ -216,5 +222,14 @@ class RoleCreatorCommand extends AbstractCommand
     private function applyPerspectives(Role $role, array $roleProperties): void
     {
         $role->setPerspectives($roleProperties["perspectives"] ?? []);
+    }
+
+    private function applyStudioPerspectives(Role $role, array $roleProperties): void
+    {
+        if ($this->userPerspectiveService === null || !isset($roleProperties['studio_perspectives'])) {
+            return;
+        }
+
+        $this->userPerspectiveService->updatePerspectives($roleProperties['studio_perspectives'], $role);
     }
 }
