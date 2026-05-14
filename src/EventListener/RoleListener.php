@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace TorqIT\RoleCreatorBundle\EventListener;
 
 use Pimcore\Event\Model\UserRoleEvent;
@@ -12,7 +14,16 @@ use TorqIT\RoleCreatorBundle\Service\RoleConfigService;
 
 class RoleListener
 {
-    public function __construct(private RoleConfigService $roleConfigService) {}
+    private object|null $userPerspectiveService = null;
+
+    public function __construct(
+        private RoleConfigService $roleConfigService,
+    ) {}
+
+    public function setUserPerspectiveService(object $service): void
+    {
+        $this->userPerspectiveService = $service;
+    }
 
     public function onPostRoleUpdate(UserRoleEvent $event): void
     {
@@ -20,6 +31,33 @@ class RoleListener
         if ($userRole instanceof Role) {
             $this->updateRoleInYaml($userRole);
         }
+    }
+
+    public function onPostRoleDelete(UserRoleEvent $event): void
+    {
+        $userRole = $event->getUserRole();
+        if ($userRole instanceof Role) {
+            $this->deleteRoleFromYaml($userRole->getName());
+        }
+    }
+
+    private function deleteRoleFromYaml(string $roleName): void
+    {
+        $roleFileLocation = $this->roleConfigService->getRolesFilePath();
+        $config = new Config();
+        try {
+            $roleStructureArray = $config->getConfigInstance($roleFileLocation, true);
+        } catch (\Exception $e) {
+            return;
+        }
+
+        if (!isset($roleStructureArray['system_roles'][$roleName])) {
+            return;
+        }
+
+        unset($roleStructureArray['system_roles'][$roleName]);
+
+        file_put_contents($roleFileLocation, Yaml::dump($roleStructureArray, 6));
     }
 
     private function updateRoleInYaml(Role $role): void
@@ -47,6 +85,14 @@ class RoleListener
                 'document_types' => $role->getDocTypes()
             ]
         ];
+
+        if ($this->userPerspectiveService !== null) {
+            $studioPerspectives = array_map(
+                fn($p) => $p->getId(),
+                $this->userPerspectiveService->getConfigPerspectives($role)
+            );
+            $newRoleData['studio_perspectives'] = $studioPerspectives;
+        }
 
         foreach ($role->getWorkspacesDocument() as $documentWorkspace) {
             if ($documentWorkspace instanceof \Pimcore\Model\User\Workspace\Document) {

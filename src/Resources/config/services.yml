@@ -29,3 +29,8 @@ services:
             event: pimcore.user.postUpdate,
             method: onPostRoleUpdate,
             }
+        - {
+            name: kernel.event_listener,
+            event: pimcore.user.postDelete,
+            method: onPostRoleDelete,
+            }
