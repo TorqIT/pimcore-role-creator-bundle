@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace TorqIT\RoleCreatorBundle\EventListener;
 
-use Pimcore\Bundle\StudioBackendBundle\User\Service\UserPerspectiveServiceInterface;
 use Pimcore\Event\Model\UserRoleEvent;
 use Pimcore\Model\User\Role;
 use Pimcore\Config;
@@ -15,10 +14,16 @@ use TorqIT\RoleCreatorBundle\Service\RoleConfigService;
 
 class RoleListener
 {
+    private object|null $userPerspectiveService = null;
+
     public function __construct(
         private RoleConfigService $roleConfigService,
-        private ?UserPerspectiveServiceInterface $userPerspectiveService = null,
     ) {}
+
+    public function setUserPerspectiveService(object $service): void
+    {
+        $this->userPerspectiveService = $service;
+    }
 
     public function onPostRoleUpdate(UserRoleEvent $event): void
     {

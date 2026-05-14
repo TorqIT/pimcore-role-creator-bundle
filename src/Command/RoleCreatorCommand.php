@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace TorqIT\RoleCreatorBundle\Command;
 
-use Pimcore\Bundle\StudioBackendBundle\User\Service\UserPerspectiveServiceInterface;
 use Pimcore\Config;
 use Pimcore\Console\AbstractCommand;
 use Pimcore\Event\UserRoleEvents;
@@ -22,14 +21,19 @@ use TorqIT\RoleCreatorBundle\Service\WorkspaceBuilder;
 class RoleCreatorCommand extends AbstractCommand
 {
     private array $permissionKeys;
+    private object|null $userPerspectiveService = null;
 
     public function __construct(
         private WorkspaceBuilder $workspaceBuilder,
         private RoleConfigService $roleConfigService,
         private EventDispatcherInterface $eventDispatcher,
-        private ?UserPerspectiveServiceInterface $userPerspectiveService = null,
     ) {
         parent::__construct();
+    }
+
+    public function setUserPerspectiveService(object $service): void
+    {
+        $this->userPerspectiveService = $service;
     }
 
     protected function configure()
